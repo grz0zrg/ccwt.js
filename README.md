@@ -14,7 +14,7 @@ Complex [continuous wavelet transformation](https://en.wikipedia.org/wiki/Contin
 - fast Javascript port of [CCWT](https://github.com/Lichtso/CCWT) library
 - with a [gabor wavelet](https://en.wikipedia.org/wiki/Gabor_wavelet)
 - use [fftw-js](https://github.com/dean-shaff/fftw-js) library which is extended from [fftw-js](https://github.com/j-funk/fftw-js) library which is an Emscripten FFTW port 
-- parallelization ready (by splitting height into chunks into a worker)
+- parallelization ready (by splitting height into chunks then feeding workers)
 - customizable frequency bands
 - full example with linear / exponential frequency bands
 
