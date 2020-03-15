@@ -20,9 +20,7 @@ Complex [continuous wavelet transformation](https://en.wikipedia.org/wiki/Contin
 
 This does not have the original render modes (real, imaginary, phase, equipotential and rainbow) bundled as it focus on the CCWT part (rendering is externalized and is handled on user side via a callback) but the provided example do amplitude rendering (linear or logarithmic) and it can be extended easily to the other modes
 
-
-## Build
-
+## Build
 
 `npm install`
 `npm run build`
@@ -50,7 +48,7 @@ CCWT.onReady = function () {
 }
 ```
 
-### browser
+## Browser
 
 See `demo/index.html`
 
