@@ -1,0 +1,130 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>ccwt.js</title>
+  </head>
+
+  <body style="margin: 0">
+    <div id="progress" style="position: absolute; left: 0; right: 0; bottom: 0; margin: auto; z-index: 10; background: rgba(64, 64, 64, 0.9); height: 26px; width: 66px; color: white; text-align: center; font-size: 24px; font-family: monospace;"></div>
+    <canvas id="output" width="1024" height="600" style="position: absolute; left: 0; right: 0; top: 0; bottom: 0; margin: auto"></canvas>
+
+    <script src='./dist/ccwt.js'></script>
+
+    <script type="text/javascript">
+  
+    window.onload = function () {
+      const canvas = document.getElementById("output")
+      const canvas_ctx = canvas.getContext('2d')
+
+      canvas_ctx.fillStyle = "#000000"
+      canvas_ctx.fillRect(0, 0, canvas.width, canvas.height)
+
+      CCWT.onReady = function () {
+        // load audio
+        const audio_context = new window.AudioContext({
+          sampleRate: 44100
+        })
+        const request = new XMLHttpRequest();
+        request.open('GET', 'female_french_numbers_1_10.wav', true)
+        request.responseType = 'arraybuffer';
+        
+        request.onload = function () {
+          const audio_data = request.response
+
+          audio_context.decodeAudioData(audio_data, function(audio_buffer) {
+            const pcmf32_buffer = audio_buffer.getChannelData(0)
+
+            const length_in_seconds = pcmf32_buffer.length / audio_context.sampleRate
+
+            const height = 500
+            const minimum_frequency = 16.34*length_in_seconds
+            const maximum_frequency = 20000.0*length_in_seconds
+            const deviation = 1.0
+
+            // linear
+            const frequency_basis_linear = 0
+            const frequency_range_linear = maximum_frequency - minimum_frequency
+            const frequency_offset_linear = minimum_frequency
+
+            // logarithmic
+            const frequency_basis_log = 2.0 // each octave double the frequency
+            const minimum_octave = Math.log(minimum_frequency) / Math.log(frequency_basis_log)
+            const maximum_octave = Math.log(maximum_frequency) / Math.log(frequency_basis_log)
+
+            const frequency_range_log = maximum_octave - minimum_octave
+            const frequency_offset_log = minimum_octave
+
+            // linear
+            //CCWT.frequencyBand(frequencies, height, frequency_range_linear, frequency_offset_linear, frequency_basis_linear, deviation)
+
+            // logarithmic
+            const frequencies = CCWT.frequencyBand(height, frequency_range_log, frequency_offset_log, frequency_basis_log, deviation)
+
+            // add some padding to avoid start / end oddities (when there is data at one/both end of the signal)
+            const padding = 0
+            const gain_factor = 30
+            const fourier_transformed_signal = CCWT.fft1d(pcmf32_buffer, padding, gain_factor)
+
+            const pixels_per_second = 60
+            const output_width = Math.floor(length_in_seconds * pixels_per_second)
+
+            let percent_complete = 0
+            const row_callback = function (y, row_data, output_padding) {
+              const spectogram = canvas_ctx.createImageData(output_width, 1);
+              const specto_data = spectogram.data
+
+              const percent_complete_new = Math.round(y / height * 100)
+              if (percent_complete_new != percent_complete) {
+                const progressElement = document.getElementById("progress")
+                progressElement.innerText = percent_complete_new + '%'
+
+                percent_complete = percent_complete_new                  
+              }
+              
+              let x = 0
+              for (x = 0; x < output_width; ++x) {
+                const r = row_data[output_padding * 2 + x * 2]
+                const i = row_data[output_padding * 2 + x * 2 + 1]
+
+                const amplitude_raw = Math.hypot(r, i)
+
+                // logarithmic intensity (sharpen edges / invert result when < 1)
+                /*
+                const logarithmic_basis = 1
+                const log_factor = 1.0 / Math.log(logarithmic_basis);
+                const value_sign = (0 < amplitude_raw) - (amplitude_raw < 0)
+                const amplitude = Math.min(Math.max(Math.log(amplitude_raw * value_sign) * log_factor, 0.), 1.) * value_sign
+                */
+
+                // linear intensity
+                const value_sign = (0 < amplitude_raw) - (amplitude_raw < 0)
+                const amplitude = Math.min(amplitude_raw * value_sign, 1.0) * value_sign
+                
+                const color = Math.round(amplitude * 255)
+
+                const index = x * 4
+                specto_data[index] = color
+                specto_data[index + 1] = color
+                specto_data[index + 2] = color
+                specto_data[index + 3] = 255
+              }
+
+              canvas_ctx.putImageData(spectogram, 0, y);
+            }
+
+            canvas.width = output_width
+            canvas.height = height
+
+            CCWT.numericOutput(fourier_transformed_signal, padding, frequencies, 0, frequencies.length / 2, output_width, row_callback)
+          }, function () {
+            window.alert('Could not load audio file.')
+          })
+
+        }
+        request.send()
+      }
+    }
+    </script>
+  </body>
+</html>
