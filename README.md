@@ -7,8 +7,6 @@ This can be used to produce high frequency / time resolution spectogram such as
 
 Can be used directly in the browser by including `demo/dist/ccwt.js` file `demo/dist/FFTW.wasm` file is also needed in the same directory as `ccwt.js` file
 
-Can also be used in node by requiring `demo/dist/ccwt.js`
-
 ## Features
 
 Complex [continuous wavelet transformation](https://en.wikipedia.org/wiki/Continuous_wavelet_transform)
