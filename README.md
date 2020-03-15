@@ -20,7 +20,9 @@ Complex [continuous wavelet transformation](https://en.wikipedia.org/wiki/Contin
 
 This does not have the original render modes (real, imaginary, phase, equipotential and rainbow) bundled as it focus on the CCWT part (rendering is externalized and is handled on user side via a callback) but the provided example do amplitude rendering (linear or logarithmic) and it can be extended easily to the other modes
 
-## build
+
+## Build
+
 
 `npm install`
 `npm run build`
@@ -59,7 +61,9 @@ First register a ready callback to `CCWT.onReady`, it will fire once the library
 Then there is only 3 functions needed :
 
 `CCWT.frequencyBand` which will generate the frequency map and will be used by `numericOutput`
+
 `CCWT.fft1d` which will produce the transformed fourier signal of input data, result will be passed to `numericOutput`
+
 `CCWT.numericOutput` which will generate each rows complex data and call the user provided row callback which will receive the row index, raw complex data and associated padding
 
 `CCWT.numericOutput` accept a start_y / end_y argument so parallelization via a worker can be easily done by splitting spectogram height
