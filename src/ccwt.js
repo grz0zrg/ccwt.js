@@ -157,7 +157,6 @@ fftw_runtime.onRuntimeInitialized = () => {
 
             let i = 0
             for (i = 0; i < output_sample_count; ++i) {
-                //console.log(i, output_sample_count)
                 // ccwt_gabor_wavelet(i)
                 const f = half_input_sample_count - Math.abs(Math.abs(i - frequency) - half_input_sample_count)
                 let input_real = input_transformed_signal[i * 2]
