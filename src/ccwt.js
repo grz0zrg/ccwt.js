@@ -59,7 +59,7 @@ fftw_runtime.onRuntimeInitialized = () => {
 
         const input_type_factor = 2
         for (i = 0; i < input_length; ++i) {
-            inputc[padding * 2 + i] = input[i] * input_type_factor * input_gain
+            inputc[padding + i] = input[i] * input_type_factor * input_gain
         }
 
         for (i = input_sample_count; i < input_sample_count * 2; ++i) {
