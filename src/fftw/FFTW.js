@@ -1909,15 +1909,21 @@ function copyTempDouble(ptr) {
       return value;
     }function _clock_gettime(clk_id, tp) {
       // int clock_gettime(clockid_t clk_id, struct timespec *tp);
-      var now = performance.now();
-      /*if (clk_id === 0) {
+      var now;
+      
+      if (clk_id === 0) {
         now = Date.now();
       } else if (clk_id === 1 && _emscripten_get_now_is_monotonic()) {
         now = _emscripten_get_now();
       } else {
-        ___setErrNo(22);
-        return -1;
-      }*/
+	if (typeof performance !== 'undefined' && performance) {
+	  now = performance.now();
+	} else {
+          now = Date.now();
+          //___setErrNo(22);
+          //return -1;
+	}
+      }
       HEAP32[((tp)>>2)]=(now/1000)|0; // seconds
       HEAP32[(((tp)+(4))>>2)]=((now % 1000)*1000*1000)|0; // nanoseconds
       return 0;

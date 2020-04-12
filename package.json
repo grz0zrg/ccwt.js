@@ -1,6 +1,6 @@
 {
   "name": "ccwt.js",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "Javascript port of the CCWT library",
   "main": "src/main.js",
   "scripts": {

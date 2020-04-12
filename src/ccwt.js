@@ -74,7 +74,7 @@ fftw_runtime.onRuntimeInitialized = () => {
         fftwf_free(input_ptr)
         fftwf_free(output_ptr)
 
-        return output
+        return output.slice()
     }
 
     /**
@@ -126,7 +126,7 @@ fftw_runtime.onRuntimeInitialized = () => {
         const input_sample_count = input_transformed_signal.length / 2
 
         const input_width = input_sample_count - 2 * padding
-        const output_sample_count = output_width * (input_sample_count / input_width)
+        const output_sample_count = Math.ceil(output_width * (input_sample_count / input_width))
 
         if (output_width === 0) {
             output_width = input_width
@@ -232,7 +232,7 @@ fftw_runtime.onRuntimeInitialized = () => {
 
             fftwf_execute(fftw_plan)
 
-            row_callback(y, output, padding * (output_width / input_width))
+            row_callback(y, output, padding * Math.round(output_width / input_width))
         }
 
         fftwf_destroy_plan(fftw_plan)
