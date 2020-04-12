@@ -38,7 +38,7 @@ Run the demo in default browser (which will use `http-server` to avoid CORS issu
 `npm install ccwt.js --save`
 
 ```js
-require('ccwt.js')
+let CCWT = require('ccwt.js')
 
 CCWT.onReady = function () {
     // CCWT.frequencyBand

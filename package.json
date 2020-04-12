@@ -1,8 +1,8 @@
 {
   "name": "ccwt.js",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "Javascript port of the CCWT library",
-  "main": "src/main.js",
+  "main": "src/ccwt.js",
   "scripts": {
     "build": "./node_modules/.bin/webpack --config webpack.config.js",
     "demo": "http-server -o demo/index.html"
