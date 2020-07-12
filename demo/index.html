@@ -20,7 +20,7 @@
       canvas_ctx.fillStyle = "#000000"
       canvas_ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-      CCWT.onReady = function () {
+      CCWT.then((ccwt_lib) => {
         // load audio
         const audio_context = new window.AudioContext({
           sampleRate: 44100
@@ -56,15 +56,15 @@
             const frequency_offset_log = minimum_octave
 
             // linear
-            //CCWT.frequencyBand(frequencies, height, frequency_range_linear, frequency_offset_linear, frequency_basis_linear, deviation)
+            //ccwt_lib.frequencyBand(frequencies, height, frequency_range_linear, frequency_offset_linear, frequency_basis_linear, deviation)
 
             // logarithmic
-            const frequencies = CCWT.frequencyBand(height, frequency_range_log, frequency_offset_log, frequency_basis_log, deviation)
+            const frequencies = ccwt_lib.frequencyBand(height, frequency_range_log, frequency_offset_log, frequency_basis_log, deviation)
 
             // add some padding to avoid start / end oddities (when there is data at one/both end of the signal)
             const padding = 0
             const gain_factor = 30
-            const fourier_transformed_signal = CCWT.fft1d(pcmf32_buffer, padding, gain_factor)
+            const fourier_transformed_signal = ccwt_lib.fft1d(pcmf32_buffer, padding, gain_factor)
 
             const pixels_per_second = 60
             const output_width = Math.floor(length_in_seconds * pixels_per_second)
@@ -116,14 +116,14 @@
             canvas.width = output_width
             canvas.height = height
 
-            CCWT.numericOutput(fourier_transformed_signal, padding, frequencies, 0, frequencies.length / 2, output_width, row_callback)
+            ccwt_lib.numericOutput(fourier_transformed_signal, padding, frequencies, 0, frequencies.length / 2, output_width, row_callback)
           }, function () {
             window.alert('Could not load audio file.')
           })
 
         }
         request.send()
-      }
+      })
     }
     </script>
   </body>

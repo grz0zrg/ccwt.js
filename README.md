@@ -38,14 +38,14 @@ Run the demo in default browser (which will use `http-server` to avoid CORS issu
 `npm install ccwt.js --save`
 
 ```js
-let CCWT = require('ccwt.js')
+const CCWT = require('ccwt.js')
 
-CCWT.onReady = function () {
-    // CCWT.frequencyBand
-    // CCWT.fft1d
-    // CCWT.numericOutput
+CCWT.then((ccwt_lib) => {
+    // ccwt_lib.frequencyBand
+    // ccwt_lib.fft1d
+    // ccwt_lib.numericOutput
     // see demo/index.html :)
-}
+});
 ```
 
 ## Browser
@@ -54,7 +54,7 @@ See `demo/index.html`
 
 ## Documentation
 
-First register a ready callback to `CCWT.onReady`, it will fire once the library is initialized
+Include the library file `ccwt.js`, the web version define a `CCWT` symbol globally which is a promise (which load the FFTW .wasm file) which when resolved return the CCWT library object where all functions are defined.
 
 Then there is only 3 functions needed :
 
@@ -71,3 +71,29 @@ The provided example `demo/index.html` has everything needed to generate a linea
 All usable CCWT functions in `src/ccwt.js` are documented using JSDoc
 
 The [original tutorial](https://github.com/Lichtso/CCWT/wiki/Tutorial) can also help (note : functions name are the same but arguments orders aren't)
+
+## fftw-js
+
+This library use a modified [fftw-js](https://github.com/dean-shaff/fftw-js) library which is a Javascript port via Emscripten of the FFTW library.
+
+The modifications include :
+
+* compiled with Emscripten 1.39.17 (latest right now)
+* compiled with `-s ALLOW_MEMORY_GROWTH=1` to allow arbitrary files length analysis
+
+There is also a small modification of the glue code to silence warnings related to errno.
+
+Note : The original `Makefile.emscripten` of the fftw-js library had to be modified a bit to produce a correct build, here are the options used : 
+
+```bash
+OPTIONS=--memory-init-file 0 \
+                                 -s FILESYSTEM=0 \
+                                 -s PRECISE_F32=1 \
+                                 -s MODULARIZE=1 \
+                                 -s WASM=1 \
+                                 -s ALLOW_MEMORY_GROWTH=1 \
+                                 -s EXPORT_NAME="'FFTWModule'" \
+                                 -s EXPORTED_FUNCTIONS=$(EXPORTED_FUNCTIONS) \
+                                 -s "EXTRA_EXPORTED_RUNTIME_METHODS=['ccall', 'cwrap']"
+
+```

@@ -12,11 +12,11 @@ const FFTW_BACKWARD = 1
 const FFTW_MEASURE = 0
 const FFTW_ESTIMATE = (1 << 6)
 
-const CCWT = {
-    onReady: null
-}
+const CCWT_obj = fftw_runtime.then((fftw_runtime) => {
+    const CCWT = {
 
-fftw_runtime.onRuntimeInitialized = () => {
+    };
+
     // initialize fftw functions
     const fftwf_plan_dft_r2c_1d = fftw_runtime.cwrap('fftwf_plan_dft_r2c_1d', 'number', ['number', 'number', 'number', 'number'])
 
@@ -74,7 +74,10 @@ fftw_runtime.onRuntimeInitialized = () => {
         fftwf_free(input_ptr)
         fftwf_free(output_ptr)
 
-        return output.slice()
+        // due to memory growth build a new buffer view
+        const output_data = new Float32Array(fftw_runtime.HEAPU8.buffer, output_ptr, input_sample_count * 2)
+
+        return output_data
     }
 
     /**
@@ -243,11 +246,7 @@ fftw_runtime.onRuntimeInitialized = () => {
         return 0
     }
 
-    if (CCWT.onReady !== null) {
-        CCWT.onReady()
-    } else {
-        console.log("ccwt.js : unregistered onReady callback")
-    }
-}
+    return CCWT;
+});
 
-module.exports = CCWT
+module.exports = CCWT_obj
